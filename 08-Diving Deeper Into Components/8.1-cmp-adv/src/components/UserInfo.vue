@@ -1,10 +1,11 @@
 <template>
   <section>
     <base-card>
-    <header>
+    <template #header>
       <h3>{{ fullName }}</h3>
       <base-badge :type="role" :caption="role.toUpperCase()"></base-badge>
-    </header>
+    </template>
+      
     <p>{{ infoText }}</p>
   
     </base-card>
@@ -19,9 +20,5 @@ export default {
 
 <style scoped>
 
-section header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+
 </style>
