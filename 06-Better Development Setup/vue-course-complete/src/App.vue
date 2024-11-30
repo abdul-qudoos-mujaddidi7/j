@@ -2,7 +2,8 @@
     <section>
         <header><h1>My Friends</h1></header>
         <ul>
-            <friend-contact></friend-contact>
+            <friend-contact  name="jawad" phone="0784801901" email="jawad@gmail.com"></friend-contact>
+            <friend-contact name="fawad" phone="0785514514" email="fawad@gmail.com"></friend-contact>
         </ul>
     </section>
     
