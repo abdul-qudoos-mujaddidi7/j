@@ -2,7 +2,8 @@
   <form @submit.prevent="submitForm">
     <div class="form-control">
       <label for="user-name">Your Name</label>
-      <input id="user-name" name="user-name" type="text" v-model="userName" />
+      <input id="user-name" name="user-name" type="text" v-model="userName" @blur="validate" />
+      <p v-if="inputValidate==='invalid'">Please Enter the correct name!</p>
     </div>
     <div class="form-control">
       <label for="age">Your Age (Years)</label>
@@ -13,7 +14,7 @@
       <select id="referrer" name="referrer" v-model="referrer">
         <option value="google">Google</option>
         <option value="wom">Word of mouth</option>
-        <option value="newspaper">Newspaper</option>
+        <option value="newspaper">Newspaper</option> 
       </select>
     </div>
     <div class="form-control">
@@ -77,7 +78,8 @@ export default {
       referrer: 'wom',
       interest: [],
       how: null,
-      confirm: false
+      confirm: false,
+      inputValidate:'pending'
     };
   },
   methods: {
@@ -101,9 +103,20 @@ export default {
       console.log(this.confirm);
       this.confirm = false;
     },
+    validate(){
+      if(this.userName===''){
+        this.inputValidate='invalid'
+      }else{
+        this.inputValidate='valid'
+      }
   },
+  }
 };
+
+
 </script>
+
+
 
 <style scoped>
 form {
