@@ -1,9 +1,9 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div class="form-control">
+    <div class="form-control" :class="{invalid: userNameValidity === 'invalid'}">
       <label for="user-name">Your Name</label>
-      <input id="user-name" name="user-name" type="text" v-model="userName" @blur="validate" />
-      <p v-if="inputValidate==='invalid'">Please Enter the correct name!</p>
+      <input id="user-name" name="user-name" type="text" v-model.trim="userName" @blur="validateInput" />
+      <p v-if="userNameValidity === 'invalid'">Please enter a valid name!</p>
     </div>
     <div class="form-control">
       <label for="age">Your Age (Years)</label>
@@ -14,7 +14,7 @@
       <select id="referrer" name="referrer" v-model="referrer">
         <option value="google">Google</option>
         <option value="wom">Word of mouth</option>
-        <option value="newspaper">Newspaper</option> 
+        <option value="newspaper">Newspaper</option>
       </select>
     </div>
     <div class="form-control">
@@ -59,6 +59,9 @@
         <label for="how-other">Other</label>
       </div>
     </div>
+    <div class="from-control">
+      <rating-control v-model="rating"></rating-control>
+    </div>
     <div class="form-control">
       <input type="checkbox" id="confirm-terms" name="confirm-terms" v-model="confirm" />
       <label for="confirm-terms">Agree to terms of use?</label>
@@ -70,7 +73,12 @@
 </template>
 
 <script>
+import RatingControl from './RatingControl.vue';
+
 export default {
+  components:{
+    RatingControl
+  },
   data() {
     return {
       userName: '',
@@ -78,8 +86,9 @@ export default {
       referrer: 'wom',
       interest: [],
       how: null,
+      rating:null,
       confirm: false,
-      inputValidate:'pending'
+      userNameValidity: 'pending'
     };
   },
   methods: {
@@ -102,21 +111,18 @@ export default {
       console.log('Confirm?');
       console.log(this.confirm);
       this.confirm = false;
+      this.rating=null
     },
-    validate(){
-      if(this.userName===''){
-        this.inputValidate='invalid'
-      }else{
-        this.inputValidate='valid'
+    validateInput() {
+      if (this.userName === '') {
+        this.userNameValidity = 'invalid';
+      } else {
+        this.userNameValidity = 'valid';
       }
+    }
   },
-  }
 };
-
-
 </script>
-
-
 
 <style scoped>
 form {
@@ -130,6 +136,14 @@ form {
 
 .form-control {
   margin: 0.5rem 0;
+}
+
+.form-control.invalid input {
+  border-color: red;
+}
+
+.form-control.invalid label {
+  color: red;
 }
 
 label {
