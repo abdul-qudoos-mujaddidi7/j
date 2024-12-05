@@ -5,7 +5,11 @@
       <div>
         <base-button @click="loadExperiences">Load Submitted Experiences</base-button>
       </div>
-      <p v-if='isLoading'>Loading.....</p>
+      <p v-if="isLoading">Loading...</p>
+      <p v-else-if="!isLoading && error">{{ error }}</p>
+      <p
+        v-else-if="!isLoading && (!results || results.length === 0)"
+      >No stored experiences found. Start adding some survey results first.</p>
       <ul v-else>
         <survey-result
           v-for="result in results"
@@ -19,52 +23,51 @@
 </template>
 
 <script>
-
 import SurveyResult from './SurveyResult.vue';
 
 export default {
-  data(){
-    return{
-      results:[],
-      isLoading:false
-    }
-  },
-  // props: ['results'],
   components: {
     SurveyResult,
   },
-
-methods: {
-  loadExperiences() {
-    this.isLoading=true
-    fetch('https://vue-http-demo-7-default-rtdb.asia-southeast1.firebasedatabase.app/surveys.json')
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Failed to fetch'); // Optional: Handle errors
-      })
-      .then(data => {
-        this.isLoading=false
-        const results = [];
-        for (const id in data) {
-          results.push({
-            id: id,
-            name: data[id].name,    
-            rating: data[id].rating
-          });
-        }
-        this.results = results; 
-      })
-  }
-},
-
-mounted(){
-  this.loadExperiences()
-}
-
-  // response.json() is a method used to extract JSON data from an HTTP response.
-  //  It reads the response body and converts it into a JavaScript object or array.
+  data() {
+    return {
+      results: [],
+      isLoading: false,
+      error: null,
+    };
+  },
+  methods: {
+    loadExperiences() {
+      this.isLoading = true;
+      this.error = null;
+      fetch('https://vue-http-demo-85e9e.firebaseio.com/surveys.json')
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          }
+        })
+        .then((data) => {
+          this.isLoading = false;
+          const results = [];
+          for (const id in data) {
+            results.push({
+              id: id,
+              name: data[id].name,
+              rating: data[id].rating,
+            });
+          }
+          this.results = results;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.isLoading = false;
+          this.error = 'Failed to fetch data - please try again later.';
+        });
+    },
+  },
+  mounted() {
+    this.loadExperiences();
+  },
 };
 </script>
 
