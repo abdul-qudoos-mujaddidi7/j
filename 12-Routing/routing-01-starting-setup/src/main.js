@@ -1,64 +1,75 @@
-import { createApp } from 'vue';
-import { createRouter, createWebHashHistory } from 'vue-router';
-import TeamsList from './components/teams/TeamsList.vue';
-import UsersList from './components/users/UsersList.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import TeamsList from './pages/TeamsList.vue';
+import UsersList from './pages/UsersList.vue';
 import TeamMembers from './components/teams/TeamMembers.vue';
-import NotFound from './components/nav/NotFound.vue';
-import TeamFooter from './components/teams/TeamFooter.vue';
-import UserFooter from './components/users/UserFooter.vue';
-import App from './App.vue';
+import NotFound from './pages/NotFound.vue';
+import TeamsFooter from './pages/TeamsFooter.vue';
+import UsersFooter from './pages/UsersFooter.vue';
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     { path: '/', redirect: '/teams' },
     {
       name: 'teams',
       path: '/teams',
-      components: { default: TeamsList, footer: TeamFooter },
+      meta: { needsAuth: true },
+      components: { default: TeamsList, footer: TeamsFooter },
       children: [
         {
           name: 'team-members',
-          path: '/teams/:teamId',
+          path: ':teamId',
           component: TeamMembers,
-          props: true,
-        },
-      ],
-    }, // our.domain.com.teams => TeamList && nested route
-    { path: '/users', components: { default: UsersList, footer: UserFooter } , beforeEnter(to,from,next){
-      console.log('beforeEnter')
-      console.log(to,from)
-      next();
-    }},
-    { path: '/:notFound(.*)', component: NotFound },
-    // { path: '/users', component: UsersList },
-    // {path:'/teams/:teamId', component:TeamMembers, props:true  },
-    // {path:'/teams' , component:TeamsList ,alias:'/'},
+          props: true
+        } // /teams/t1
+      ]
+    }, // our-domain.com/teams => TeamsList
+    {
+      path: '/users',
+      components: {
+        default: UsersList,
+        footer: UsersFooter
+      },
+      beforeEnter(to, from, next) {
+        console.log('users beforeEnter');
+        console.log(to, from);
+        next();
+      }
+    },
+    { path: '/:notFound(.*)', component: NotFound }
   ],
   linkActiveClass: 'active',
-  scrollBehavior(to, from, savedPosition) {
-    console.log(to, from, savedPosition);
-
+  scrollBehavior(_, _2, savedPosition) {
+    // console.log(to, from, savedPosition);
     if (savedPosition) {
       return savedPosition;
     }
-
     return { left: 0, top: 0 };
-  },
+  }
 });
-const app = createApp(App);
 
-router.beforeEach(function (to, from, next) {
-  console.log('Global Reach!');
+router.beforeEach(function(to, from, next) {
+  console.log('Global beforeEach');
   console.log(to, from);
-  // if(to.name==="team-members"){
-  //     next()
+  if (to.meta.needsAuth) {
+    console.log('Needs auth!');
+    next();
+  } else {
+    next();
+  }
+  // if (to.name === 'team-members') {
+  //   next();
+  // } else {
+  //   next({ name: 'team-members', params: { teamId: 't2' } });
   // }
-
-  // else{
-  //     next({name:'team-members',params:{teamId:'t2'}})
-  // }
-  next();
+  // next();
 });
-app.use(router);
-app.mount('#app');
+
+router.afterEach(function(to, from) {
+  // sending analytics data
+  console.log('Global afterEach');
+  console.log(to, from);
+});
+
+export default router;

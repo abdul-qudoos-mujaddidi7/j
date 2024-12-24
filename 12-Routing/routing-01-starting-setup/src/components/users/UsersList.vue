@@ -1,5 +1,6 @@
 <template>
 <button @click="userInput">Confirm</button>
+<button @click="updateConfirm">Confirm Change</button>
   <ul>
     <user-item v-for="user in users" :key="user.id" :name="user.fullName" :role="user.role"></user-item>
   </ul>
@@ -12,10 +13,20 @@ export default {
   components: {
     UserItem,
   },
+
+  data(){
+    return{
+      confirm: false
+    }
+  },
   inject: ['users'],
   methods:{
     userInput(){
       this.$router.push('/teams')
+    },
+
+    updateConfirm(){
+      this.confirm=true
     }
   },
 
@@ -23,7 +34,23 @@ export default {
     console.log('beforeRouteEnter')
     console.log(to,from)
     next()
-  }
+  },
+
+  beforeRouteLeave(to,from,next){
+    console.log("beforeRouteLeave")
+    console.log(to,from)
+    if(this.confirm){
+      next()
+    }
+    else{
+      const confirmStatus= confirm("Do you really want to leave!")
+      next(confirmStatus)
+    }
+  },
+
+  unmounted(){
+    console.log('unmounted')
+  },
 };
 </script>
 
