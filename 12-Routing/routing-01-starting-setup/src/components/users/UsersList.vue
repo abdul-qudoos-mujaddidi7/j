@@ -17,6 +17,12 @@ export default {
     userInput(){
       this.$router.push('/teams')
     }
+  },
+
+  beforeRouteEnter(to,from,next){
+    console.log('beforeRouteEnter')
+    console.log(to,from)
+    next()
   }
 };
 </script>

@@ -25,37 +25,40 @@ const router = createRouter({
         },
       ],
     }, // our.domain.com.teams => TeamList && nested route
-    { path: '/users', components: { default: UsersList, footer: UserFooter } },
+    { path: '/users', components: { default: UsersList, footer: UserFooter } , beforeEnter(to,from,next){
+      console.log('beforeEnter')
+      console.log(to,from)
+      next();
+    }},
     { path: '/:notFound(.*)', component: NotFound },
     // { path: '/users', component: UsersList },
     // {path:'/teams/:teamId', component:TeamMembers, props:true  },
     // {path:'/teams' , component:TeamsList ,alias:'/'},
   ],
   linkActiveClass: 'active',
-  scrollBehavior(to,from,savedPosition){
-    console.log(to,from,savedPosition)
+  scrollBehavior(to, from, savedPosition) {
+    console.log(to, from, savedPosition);
 
-    if(savedPosition){
-        return savedPosition
+    if (savedPosition) {
+      return savedPosition;
     }
 
-    return{left:0,top:0}
-
-  }
+    return { left: 0, top: 0 };
+  },
 });
 const app = createApp(App);
 
-router.beforeEach(function(to,from,next){
-    console.log("Global Reach!")
-    console.log(to,from)
-    // if(to.name==="team-members"){
-    //     next()
-    // }
+router.beforeEach(function (to, from, next) {
+  console.log('Global Reach!');
+  console.log(to, from);
+  // if(to.name==="team-members"){
+  //     next()
+  // }
 
-    // else{
-    //     next({name:'team-members',params:{teamId:'t2'}})
-    // }
-    next();
-})
+  // else{
+  //     next({name:'team-members',params:{teamId:'t2'}})
+  // }
+  next();
+});
 app.use(router);
 app.mount('#app');
