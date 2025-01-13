@@ -1,50 +1,96 @@
 <template>
   <section class="container">
-    <h2>{{ userName }}</h2>
-    <h3>{{ age }}</h3>
+    <user-data
+      class="test"
+      :first-name="firstName"
+      :last-name="lastName"
+    ></user-data>
     <button @click="setAge">Change Age</button>
     <div>
-      <input type="text" placeholder="First Name" @input="setFirstName" />
-      <input type="text" placeholder="Last Name" @input="setLastName" />
+      <input type="text" placeholder="First Name" v-model="firstName" />
+      <input type="text" placeholder="Last Name" ref="lastNameInput" />
+      <button @click="setLastName">Set Last Name</button>
     </div>
   </section>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import {
+  ref,
+  computed,
+  watch,
+  provide,
+  onBeforeMount,
+  onMounted,
+  onBeforeUpdate,
+  onUpdated,
+  onBeforeUnmount,
+  onUnmounted,
+} from 'vue';
+import UserData from './components/UserData.vue';
 
 export default {
+  components: {
+    UserData,
+  },
   setup() {
     // const uName = ref('Maximilian');
     const firstName = ref('');
     const lastName = ref('');
+    const lastNameInput = ref(null);
     const uAge = ref(31);
     // const user = reactive({
     //   name: 'Maximilian',
     //   age: 31,
     // });
 
-    const uName = computed(function() {
+    provide('userAge', uAge);
+
+    const uName = computed(function () {
       return firstName.value + ' ' + lastName.value;
+    });
+
+    watch([uAge, uName], function (newValues, oldValues) {
+      console.log('Old age: ' + oldValues[0]);
+      console.log('New age: ' + newValues[0]);
+      console.log('Old name: ' + oldValues[1]);
+      console.log('New name: ' + newValues[1]);
     });
 
     function setNewAge() {
       uAge.value = 33;
     }
 
-    function setFirstName(event) {
-      firstName.value = event.target.value;
+    function setLastName() {
+      lastName.value = lastNameInput.value.value;
     }
 
-    function setLastName(event) {
-      lastName.value = event.target.value;
-    }
+    onBeforeMount(function(){
+      console.log('Before Mount')
+    })
+    onMounted(function(){
+      console.log('Mounted')
+    })
+    onBeforeUpdate(function(){
+      console.log('Before Before Update')
+    })
+    onUpdated(function(){
+      console.log('Updated')
+    })
+    onBeforeUnmount(function(){
+      console.log('Before UnMount')
+    })
+    onUnmounted(function(){
+      console.log('UnMounted')
+    })
 
     return {
       userName: uName,
       age: uAge,
       setAge: setNewAge,
-      setFirstName,
+      firstName,
+      lastName,
+      lastNameInput,
       setLastName,
     };
   },
@@ -58,6 +104,14 @@ export default {
   //   setNewAge() {
   //     this.age = 32;
   //   }
+  // },
+  // watch: {
+  //   age(val) {
+  //     console.log(val);
+  //   }
+  // }
+  // provide() {
+  //   return { age: this.age };
   // }
 };
 </script>
